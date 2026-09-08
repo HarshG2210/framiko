@@ -1,0 +1,47 @@
+# Node modules (will be reinstalled in container)
+node_modules
+npm-debug.log
+yarn-error.log
+yarn-lock.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Build artifacts
+dist
+build
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage
+.jest_cache
+
+# Documentation
+README.md
+LICENSE
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Development
+.vite

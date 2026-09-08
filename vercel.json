@@ -1,0 +1,31 @@
+{
+  "rewrites": [
+    {
+      "source": "/media/:path*",
+      "destination": "https://gauravbhongade.online/media/:path*"
+    },
+    {
+      "source": "/(owner-account|owner-account/:path*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/media/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        }
+      ]
+    }
+  ]
+}
