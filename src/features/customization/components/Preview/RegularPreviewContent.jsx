@@ -1,4 +1,4 @@
-import { Box, Image as ChakraImage } from "@chakra-ui/react";
+import { AspectRatio, Box, Image as ChakraImage, useBreakpointValue } from "@chakra-ui/react";
 
 import { forwardRef } from "react";
 import { useFrameBorder } from "../../hooks/useFrameBorder";
@@ -24,36 +24,52 @@ const RegularPreviewContent = forwardRef((_, previewRef) => {
   const { w, h } =
     ORIENTATION_SIZE[imageOrientation] || ORIENTATION_SIZE.square;
 
-  const { borderWidth, borderSlice } = useFrameBorder(selectedFrame, showFrame);
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
+  const { borderWidth, borderSlice } = useFrameBorder(
+    selectedFrame,
+    showFrame,
+    "regular",
+    false,
+    !!isMobile
+  );
+
+  // On mobile, use most of the viewport width but keep some padding to avoid touching edges
+  const containerWidth = useBreakpointValue({ base: "calc(100vw - 32px)", md: `${w}px` });
+  const containerMaxHeight = useBreakpointValue({ base: "90vh", md: "auto" });
 
   if (!uploadedImage || !imageOrientation) return null;
 
   return (
-    <Box
-      ref={previewRef}
-      width={`${w}px`}
-      height={`${h}px`}
-      boxSizing="content-box"
-      border={`${borderWidth}px solid transparent`}
-      sx={{
-        borderImage: selectedFrame
-          ? `url(${selectedFrame.image}) ${borderSlice} stretch`
-          : "none",
-      }}
-      bg="black"
-      position="relative"
-      overflow="hidden"
-    >
-      <ChakraImage
-        src={uploadedImage}
-        alt={uploadedImage}
-        w="100%"
-        h="100%"
-        objectFit="fill"
-        transform={`rotate(${imageTransform.rotate}deg)`}
-        transition="transform 0.2s ease"
-        draggable={false}
-      />
+    <Box ref={previewRef} display="flex" justifyContent="center">
+      <AspectRatio
+        ratio={w / h}
+        width={containerWidth}
+        maxW={`${w}px`}
+        sx={{
+          boxSizing: "border-box",
+          border: `${borderWidth}px solid transparent`,
+          borderImage: selectedFrame
+            ? `url(${selectedFrame.image}) ${borderSlice} stretch`
+            : "none",
+          bg: "white",
+          position: "relative",
+          overflow: "hidden",
+          maxHeight: containerMaxHeight,
+        }}
+      >
+        <ChakraImage
+          src={uploadedImage}
+          alt={uploadedImage}
+          w="100%"
+          h="100%"
+          objectFit="contain"
+          objectPosition="center"
+          transform={`rotate(${imageTransform.rotate}deg)`}
+          transition="transform 0.2s ease"
+          draggable={false}
+        />
+      </AspectRatio>
     </Box>
   );
 });

@@ -21,7 +21,7 @@ const Configurator = ({
   );
   const hasActiveImage = Boolean(
     uploadedImage &&
-      (imageSource === "user-upload" || imageSource === "artwork-category"),
+    (imageSource === "user-upload" || imageSource === "artwork-category"),
   );
   return (
     <>
@@ -56,7 +56,7 @@ const Configurator = ({
           w={{ base: "100%", md: "100%", lg: "200px" }}
           order={{ base: 3, md: 3, lg: 3 }}
           mt={{ base: 4, md: 4, lg: 0 }}
-          display={{ base: "none", md: "none", lg: "block" }}
+          display={{ base: "block", md: "block", lg: "block" }}
         >
           <FrameSelector />
         </Box>

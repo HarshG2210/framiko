@@ -1,5 +1,5 @@
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-import { Box, Button, Flex, HStack, IconButton, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, IconButton, Text, useColorModeValue } from "@chakra-ui/react";
 
 import React from "react";
 import { useSelector } from "react-redux";
@@ -21,6 +21,8 @@ const FramePreviewStickyBar = ({
       : Number(estimatedTotal || 0);
   const totalPrice = calculatedPrice * Number(quantity || 1);
   const formattedCalculatedPrice = totalPrice.toFixed(2);
+
+  const priceColor = useColorModeValue("#1A1A1A", "#FFFFFF");
 
   const { items: frameInventoryItems = [] } = useSelector(
     (s) => s.frameInventory || {},
@@ -88,7 +90,7 @@ const FramePreviewStickyBar = ({
             <Text
               fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
               fontWeight="700"
-              color="#1A1A1A"
+              color={priceColor}
               letterSpacing="-0.02em"
               lineHeight="1.2"
             >
@@ -101,7 +103,7 @@ const FramePreviewStickyBar = ({
             <Text
               fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
               fontWeight="500"
-              color="#1A1A1A"
+              color={priceColor}
               whiteSpace="nowrap"
             >
               Quantity

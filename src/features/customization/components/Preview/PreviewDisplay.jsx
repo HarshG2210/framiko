@@ -9,9 +9,6 @@ const PreviewDisplay = () => {
   return (
     <Box justify="center" align="center">
       <PreviewCanvas previewRef={previewRef} />
-      <Box display={{ base: "block", md: "block", lg: "none" }} w="100%" mt={4}>
-        <FrameSelector />
-      </Box>
     </Box>
   );
 };
