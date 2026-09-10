@@ -17,9 +17,9 @@ const PreviewCanvas = ({ previewRef }) => {
       justifyContent="center"
       gap={4}
       bg="#F8F8F8"
-      borderRadius="lg"
       position="relative"
-      overflow="visible"
+      overflowX="hidden"
+      overflowY="visible"
     >
       <PreviewControls previewRef={previewRef} />
 

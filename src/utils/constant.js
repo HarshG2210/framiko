@@ -1,4 +1,6 @@
-export const API_BASE = import.meta.env.VITE_API_BASE || "/";
+export const API_BASE = import.meta.env.DEV
+  ? "/"
+  : import.meta.env.VITE_API_BASE || "/";
 // export const API_BASE = "https://gauravbhongade.online/";
 const DEFAULT_IMAGE_API_BASE = "/media";
 export const Image_API_BASE = (

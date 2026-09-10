@@ -34,14 +34,14 @@ const RegularPreviewContent = forwardRef((_, previewRef) => {
     !!isMobile
   );
 
-  // On mobile, use most of the viewport width but keep some padding to avoid touching edges
-  const containerWidth = useBreakpointValue({ base: "calc(100vw - 32px)", md: `${w}px` });
+  // On mobile, use the available container width (avoid using viewport width which can overflow)
+  const containerWidth = useBreakpointValue({ base: "100%", md: `${w}px` });
   const containerMaxHeight = useBreakpointValue({ base: "90vh", md: "auto" });
 
   if (!uploadedImage || !imageOrientation) return null;
 
   return (
-    <Box ref={previewRef} display="flex" justifyContent="center">
+    <Box ref={previewRef} display="flex" justifyContent="center" width="100%">
       <AspectRatio
         ratio={w / h}
         width={containerWidth}

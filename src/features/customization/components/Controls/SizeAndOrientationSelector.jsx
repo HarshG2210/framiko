@@ -102,8 +102,8 @@ const SizeAndOrientationSelector = () => {
           <Box
             position="absolute"
             top="calc(100% + 6px)"
-            left={0}
-            right={0}
+            left={{ base: "-16px", md: 0 }}
+            right={{ base: "-16px", md: 0 }}
             zIndex={20}
             bg="white"
             borderRadius="xl"
@@ -157,16 +157,6 @@ const SizeAndOrientationSelector = () => {
                       {Number(size.width_cm).toFixed(0)} ×{" "}
                       {Number(size.height_cm).toFixed(0)} in
                     </Text>
-                    {forceOrientation && (
-                      <Badge
-                        colorScheme="green"
-                        fontSize="9px"
-                        borderRadius="full"
-                        px={2}
-                      >
-                        Optimized
-                      </Badge>
-                    )}
                   </HStack>
                 );
               })}
@@ -221,12 +211,12 @@ const SizeAndOrientationSelector = () => {
         </Flex>
 
         {/* ── Size + Lamination ── */}
-        <Flex direction={{ base: "column", sm: "row" }} gap={4} w="100%">
-          <Box flex={1}>
+        <Flex direction={{ base: "row", sm: "row" }} gap={4} w="100%">
+          <Box flex={1} w={{ base: "50%", md: "50%" }}>
             <CustomDropdown />
           </Box>
 
-          <Box flex={1}>
+          <Box flex={1} w={{ base: "50%", md: "50%" }}>
             <MaterialDisplay />
           </Box>
         </Flex>
