@@ -4,14 +4,11 @@ import {
   Button,
   Flex,
   HStack,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Text,
   VStack,
+  useOutsideClick,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   setImageOrientation,
   setPosition,
@@ -62,7 +59,14 @@ const SizeAndOrientationSelector = () => {
 
   /* ---------------- SIZE DROPDOWN ---------------- */
   const CustomDropdown = () => {
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const ref = useRef();
+
+    useOutsideClick({
+      ref,
+      handler: () => setIsOpen(false),
+    });
+
     const selectedText = selectedSize
       ? `${Number(selectedSize.width_cm).toFixed(0)} × ${Number(
           selectedSize.height_cm,
@@ -70,35 +74,46 @@ const SizeAndOrientationSelector = () => {
       : "Select Size";
 
     return (
-      <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
-        <Box w="100%">
-          <Text fontSize="sm" fontWeight="600" color="#1A1A1A" mb={2}>
-            Size
-          </Text>
-          <MenuButton
-            as={Button}
-            onClick={() => setMenuOpen((s) => !s)}
-            aria-expanded={menuOpen}
-            style={{ zIndex: 2000, pointerEvents: "auto" }}
-            rightIcon={<ChevronDownIcon boxSize={4} color="gray.400" />}
-            bg="#F7F7F7"
+      <Box position="relative" ref={ref} w="100%">
+        <Text fontSize="sm" fontWeight="600" color="#1A1A1A" mb={2}>
+          Size
+        </Text>
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          rightIcon={<ChevronDownIcon boxSize={4} color="gray.400" />}
+          bg="#F7F7F7"
+          border="1px solid"
+          borderColor="#EBEBEB"
+          borderRadius="full"
+          h="48px"
+          px={5}
+          fontWeight="400"
+          fontSize="sm"
+          color={selectedSize ? "#1A1A1A" : "#A0A0A0"}
+          _hover={{ bg: "#F0F0F0" }}
+          _active={{ bg: "#EBEBEB" }}
+          w="100%"
+          justifyContent="space-between"
+        >
+          {selectedText}
+        </Button>
+
+        {isOpen && (
+          <Box
+            position="absolute"
+            top="calc(100% + 6px)"
+            left={0}
+            right={0}
+            zIndex={20}
+            bg="white"
+            borderRadius="xl"
+            boxShadow="0 8px 30px rgba(0,0,0,0.1)"
             border="1px solid"
             borderColor="#EBEBEB"
-            borderRadius="full"
-            h="48px"
-            px={5}
-            fontWeight="400"
-            fontSize="sm"
-            color={selectedSize ? "#1A1A1A" : "#A0A0A0"}
-            _hover={{ bg: "#F0F0F0" }}
-            _active={{ bg: "#EBEBEB" }}
-            w="100%"
-            justifyContent="space-between"
+            maxH="260px"
+            overflowY="auto"
+            p={2}
           >
-            {selectedText}
-          </MenuButton>
-
-          <MenuList maxH="260px" overflowY="auto" borderRadius="xl" p={2}>
             <VStack align="stretch" spacing={1}>
               {filteredSizes.map((size) => {
                 const isSelected = selectedSize?.id === size.id;
@@ -109,49 +124,56 @@ const SizeAndOrientationSelector = () => {
                 );
 
                 return (
-                  <MenuItem
+                  <HStack
                     key={size.id}
                     px={3}
                     py={2.5}
                     borderRadius="lg"
                     bg={isSelected ? "#F5F0F5" : "transparent"}
+                    cursor="pointer"
+                    transition="all 0.15s"
                     _hover={{ bg: isSelected ? "#F5F0F5" : "#F9F9F9" }}
                     onClick={() => {
                       dispatch(setSelectedSize(size));
                       dispatch(setPosition({ x: 50, y: 50 }));
+                      setIsOpen(false);
                       openCropModal();
                     }}
                   >
-                    <HStack spacing={3} w="full">
-                      <Box
-                        width={`${previewWidth}px`}
-                        height={`${previewHeight}px`}
-                        border="1.5px solid"
-                        borderColor={isSelected ? "#590854" : "#CCC"}
-                        borderRadius="sm"
-                        flexShrink={0}
-                      />
-                      <Text
-                        fontSize="sm"
-                        fontWeight={isSelected ? "600" : "400"}
-                        color="#1A1A1A"
-                        flex="1"
+                    <Box
+                      width={`${previewWidth}px`}
+                      height={`${previewHeight}px`}
+                      border="1.5px solid"
+                      borderColor={isSelected ? "#590854" : "#CCC"}
+                      borderRadius="sm"
+                      flexShrink={0}
+                    />
+                    <Text
+                      fontSize="sm"
+                      fontWeight={isSelected ? "600" : "400"}
+                      color="#1A1A1A"
+                      flex="1"
+                    >
+                      {Number(size.width_cm).toFixed(0)} ×{" "}
+                      {Number(size.height_cm).toFixed(0)} in
+                    </Text>
+                    {forceOrientation && (
+                      <Badge
+                        colorScheme="green"
+                        fontSize="9px"
+                        borderRadius="full"
+                        px={2}
                       >
-                        {Number(size.width_cm).toFixed(0)} × {Number(size.height_cm).toFixed(0)} in
-                      </Text>
-                      {forceOrientation && (
-                        <Badge colorScheme="green" fontSize="9px" borderRadius="full" px={2}>
-                          Optimized
-                        </Badge>
-                      )}
-                    </HStack>
-                  </MenuItem>
+                        Optimized
+                      </Badge>
+                    )}
+                  </HStack>
                 );
               })}
             </VStack>
-          </MenuList>
-        </Box>
-      </Menu>
+          </Box>
+        )}
+      </Box>
     );
   };
 
@@ -199,7 +221,7 @@ const SizeAndOrientationSelector = () => {
         </Flex>
 
         {/* ── Size + Lamination ── */}
-        <Flex direction={{ base: "row", sm: "row" }} gap={4} w="100%">
+        <Flex direction={{ base: "column", sm: "row" }} gap={4} w="100%">
           <Box flex={1}>
             <CustomDropdown />
           </Box>
