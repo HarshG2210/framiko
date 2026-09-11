@@ -20,6 +20,7 @@ const RegularPreviewContent = forwardRef((_, previewRef) => {
     showFrame,
     imageTransform,
     imageOrientation,
+    frameViewChoice,
   } = useSelector((s) => s.framePreview);
 
   const { w, h } =
@@ -38,6 +39,7 @@ const RegularPreviewContent = forwardRef((_, previewRef) => {
   // On mobile, use the available container width (avoid using viewport width which can overflow)
   const containerWidth = useBreakpointValue({ base: "100%", md: `${w}px` });
   const containerMaxHeight = useBreakpointValue({ base: "90vh", md: "auto" });
+  const matGap = frameViewChoice === "moult" ? (isMobile ? 14 : 28) : 0;
 
   if (!uploadedImage || !imageOrientation) return null;
 
@@ -59,17 +61,37 @@ const RegularPreviewContent = forwardRef((_, previewRef) => {
           maxHeight: containerMaxHeight,
         }}
       >
-        <ChakraImage
-          src={uploadedImage}
-          alt={uploadedImage}
-          w="100%"
-          h="100%"
-          objectFit="contain"
-          objectPosition="center"
-          transform={`rotate(${imageTransform.rotate}deg)`}
-          transition="transform 0.2s ease"
-          draggable={false}
-        />
+        <Box
+          position="absolute"
+          top={`${matGap}px`}
+          right={`${matGap}px`}
+          bottom={`${matGap}px`}
+          left={`${matGap}px`}
+          width="auto"
+          height="auto"
+          overflow="hidden"
+          bg="white"
+          sx={{
+            top: `${matGap}px !important`,
+            right: `${matGap}px !important`,
+            bottom: `${matGap}px !important`,
+            left: `${matGap}px !important`,
+            width: `auto !important`,
+            height: `auto !important`,
+          }}
+        >
+          <ChakraImage
+            src={uploadedImage}
+            alt={uploadedImage}
+            w="100%"
+            h="100%"
+            objectFit="fill"
+            objectPosition="center"
+            transform={`rotate(${imageTransform.rotate}deg)`}
+            transition="transform 0.2s ease"
+            draggable={false}
+          />
+        </Box>
       </AspectRatio>
     </Box>
   );

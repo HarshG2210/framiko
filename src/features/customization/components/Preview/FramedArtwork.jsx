@@ -2,6 +2,7 @@ import { Box, Image as ChakraImage } from "@chakra-ui/react";
 import { normalizeMediaUrl } from "../../../../utils/constant";
 
 import { useFrameBorder } from "../../hooks/useFrameBorder";
+import { useSelector } from "react-redux";
 
 const CM_TO_PX = 8;
 
@@ -14,6 +15,9 @@ const FramedArtwork = ({
   draggableProps,
   mobileFixed = false,
 }) => {
+  const frameViewChoice = useSelector(
+    (state) => state.framePreview.frameViewChoice,
+  );
   const widthPx = Number(size.width_cm) * CM_TO_PX;
   const heightPx = Number(size.height_cm) * CM_TO_PX;
 
@@ -22,6 +26,7 @@ const FramedArtwork = ({
     showFrame,
     variant,
   );
+  const matGap = frameViewChoice === "moult" ? 15 : 0;
 
   if (!uploadedImage || !size) return null;
 
@@ -56,20 +61,21 @@ const FramedArtwork = ({
         width={mobileFixed ? "10vw" : `${widthPx}px`}
         height={mobileFixed ? "auto" : `${heightPx}px`}
         boxSizing="content-box"
+        padding={`${matGap}px`}
         border={`${borderWidth}px solid transparent`}
         sx={{
           borderImage: selectedFrame
             ? `url(${normalizeMediaUrl(selectedFrame.image)}) ${borderSlice} stretch`
             : "none",
         }}
-        bg="transparent"
+        bg="#fff"
       >
         <ChakraImage
           src={uploadedImage}
           alt={uploadedImage}
           w="100%"
           h="100%"
-          objectFit={mobileFixed ? "contain" : "fill"}
+          objectFit="fill"
           draggable={false}
           bg="transparent"
         />

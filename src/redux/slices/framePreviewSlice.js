@@ -21,6 +21,7 @@ const initialState = {
   backgroundPosition: { x: 0, y: 0 },
   resetKey: 0,
   selectedMaterial: null,
+  frameViewChoice: "bold",
   imageTransform: { rotate: 0, scaleX: 1, scaleY: 1 },
 };
 
@@ -85,6 +86,9 @@ const framePreviewSlice = createSlice({
     setSelectedMaterial: (state, action) => {
       state.selectedMaterial = action.payload;
     },
+    setFrameViewChoice: (state, action) => {
+      state.frameViewChoice = action.payload;
+    },
 
     clearPreviews: (state) => {
       state.savedPreviews = [];
@@ -107,6 +111,7 @@ const framePreviewSlice = createSlice({
       state.imageDimensions = { width: 0, height: 0 };
       state.imageTransform = { rotate: 0, scaleX: 1, scaleY: 1 };
       state.selectedMaterial = null;
+      state.frameViewChoice = "bold";
     },
     hydratePreviewState: (state, action) => {
       return {
@@ -142,6 +147,7 @@ export const {
   setBackgroundPosition,
   incrementResetKey,
   setSelectedMaterial,
+  setFrameViewChoice,
   savePreview,
   clearPreviews,
   removePreview,

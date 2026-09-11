@@ -80,6 +80,7 @@ export const submitCustomizedFinalImage = createAsyncThunk(
       --------------------------- */
 
       formData.append("is_completed", String(data.is_completed));
+      formData.append("frame_view_choice", data.frame_view_choice || "bold");
       console.log("Is Completed:", data.is_completed);
 
       return await customizationApi.submitCustomizedFinalImage(formData);

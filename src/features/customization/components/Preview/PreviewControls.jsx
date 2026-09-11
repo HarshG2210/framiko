@@ -19,7 +19,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import CropModal from "../Controls/CropModal";
 import FullScreenWall from "../Controls/FullScreenWall";
-import { resetSelection } from "../../../../redux/slices/framePreviewSlice";
+import {
+  resetSelection,
+  setFrameViewChoice,
+} from "../../../../redux/slices/framePreviewSlice";
 import { useDisclosure } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -32,7 +35,10 @@ const PreviewControls = () => {
   const crop = useDisclosure();
   const fullscreen = useDisclosure();
 
-  const [moreSelection, setMoreSelection] = useState("Bold");
+  const moreSelection = previewState.frameViewChoice === "moult" ? "Moult" : "Bold";
+  const handleViewChoice = (choice) => {
+    dispatch(setFrameViewChoice(choice === "Moult" ? "moult" : "bold"));
+  };
 
   const handleFullscreen = () => {
     if (!selectedBackground) return;
@@ -96,7 +102,7 @@ const PreviewControls = () => {
             More
           </MenuButton>
           <MenuList minW="160px" borderRadius="md" py={2}>
-            <MenuItem onClick={() => setMoreSelection("Bold")}>
+            <MenuItem onClick={() => handleViewChoice("Bold")}>
               <HStack spacing={3} w="full">
                 <Box
                   w={3}
@@ -109,7 +115,7 @@ const PreviewControls = () => {
                 <Box>Bold</Box>
               </HStack>
             </MenuItem>
-            <MenuItem onClick={() => setMoreSelection("Moult")}>
+            <MenuItem onClick={() => handleViewChoice("Moult")}>
               <HStack spacing={3} w="full">
                 <Box
                   w={3}
@@ -191,8 +197,8 @@ const PreviewControls = () => {
             <Icon as={FiMoreHorizontal} boxSize={4} color="white" />
           </MenuButton>
           <MenuList minW="160px" borderRadius="md" py={2}>
-            <MenuItem onClick={() => setMoreSelection("Bold")}>Bold</MenuItem>
-            <MenuItem onClick={() => setMoreSelection("Moult")}>Moult</MenuItem>
+            <MenuItem onClick={() => handleViewChoice("Bold")}>Bold</MenuItem>
+            <MenuItem onClick={() => handleViewChoice("Moult")}>Moult</MenuItem>
           </MenuList>
         </Menu>
       </Flex>

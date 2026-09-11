@@ -22,6 +22,7 @@ const HiddenExportStage = () => {
     imageOrientation,
     selectedSize,
     selectedBackground,
+    frameViewChoice,
   } = useSelector((s) => s.framePreview);
 
   const variant = selectedBackground ? "wall" : "regular";
@@ -60,6 +61,7 @@ const HiddenExportStage = () => {
   const innerFrameHeight = Math.max(0, frameHeight - sliceValue * 2);
   const hasFrameBorder =
     frame && showFrame && sliceValue > 0 && borderWidth > 0 && frameWidth > 0;
+  const matGap = frameViewChoice === "moult" ? 28 : 0;
 
   return (
     <div style={{ display: "none" }}>
@@ -81,10 +83,10 @@ const HiddenExportStage = () => {
           />
           <KonvaImage
             image={artwork}
-            x={borderWidth}
-            y={borderWidth}
-            width={w}
-            height={h}
+            x={borderWidth + matGap}
+            y={borderWidth + matGap}
+            width={Math.max(0, w - matGap * 2)}
+            height={Math.max(0, h - matGap * 2)}
             rotation={imageTransform.rotate}
           />
           {hasFrameBorder && (

@@ -14,19 +14,12 @@ import Configurator from "../../customization/components/Configurator";
 import ImageUploader from "../../customization/components/Controls/ImageUploader";
 import PreviewControls from "../../customization/components/Preview/PreviewControls";
 import { fetchArtworks } from "../../../redux/slices/artworksSlice";
-import { fetchPublicFrameInventory } from "../../../redux/slices/frameInventorySlice";
+import { fetchFrameInventory } from "../../../redux/slices/frameInventorySlice";
 import { loadAuthData } from "../../../services/authStorage";
 import { submitCustomizedFinalImage } from "../../../redux/slices/customizedFinalImageSlice";
 import { useFrameFiltering } from "../../customization/hooks/useFrameFiltering";
 import { useLocation } from "react-router-dom";
 import { useSizeFiltering } from "../../customization/hooks/useSizeFiltering";
-
-// Public inventory fetch intentionally not used here to avoid blocking add-to-cart
-
-
-
-
-
 
 const FramePreview = () => {
   const dispatch = useDispatch();
@@ -43,6 +36,7 @@ const FramePreview = () => {
     selectedFrame,
     selectedMaterial,
     cropOriginalImage,
+    frameViewChoice,
   } = useSelector((s) => s.framePreview);
   const { artworkCategoryImages = [] } = useSelector(
     (s) => s.artworkCategoryImages,
@@ -57,7 +51,6 @@ const FramePreview = () => {
   useFrameFiltering();
 
   const [quantity, setQuantity] = useState(1);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const selectedArtwork = useMemo(() => {
     const imageUrl =
@@ -120,13 +113,11 @@ const FramePreview = () => {
   const estimatedTotal = calculatedPrice;
 
   const handleArtworkAddToCart = async () => {
-    setIsAddingToCart(true);
     if (!token) {
       toast({
         title: "Please login to use Add to Cart",
         status: "warning",
       });
-      setIsAddingToCart(false);
       return;
     }
 
@@ -163,22 +154,14 @@ const FramePreview = () => {
     let freshInventory = frameInventoryItems;
     let freshCart = currentCartItems || [];
 
-    // Avoid fetching public inventory synchronously here — use the store's
-    // `frameInventoryItems` which may be kept up-to-date elsewhere. This
-    // prevents protected backend inventory endpoints from causing 401 errors
-    // to interrupt the Add to Cart flow in deployed frontends.
     try {
-      // Dispatch the public inventory fetch but do not use unwrap() so a
-      // 401 from the public endpoint won't throw — instead we read the
-      // action payload and fall back to existing state.
-      const invAction = await dispatch(fetchPublicFrameInventory());
-      const invPayload = invAction?.payload ?? [];
+      const invPayload = await dispatch(fetchFrameInventory()).unwrap();
       freshInventory = Array.isArray(invPayload)
         ? invPayload
         : invPayload?.results || invPayload?.data || freshInventory;
     } catch (e) {
       console.log("Error fetching frame inventory:", e);
-      // ignore and continue with whatever is in the store
+      // ignore fetch error and fall back to local state
     }
 
     try {
@@ -258,6 +241,7 @@ const FramePreview = () => {
         submitCustomizedFinalImage({
           final_image: dataUrl,
           is_completed: true,
+          frame_view_choice: frameViewChoice,
         }),
       ).unwrap();
 
@@ -358,9 +342,6 @@ const FramePreview = () => {
         title: "Failed to save preview or add to cart",
         status: "error",
       });
-    }
-    finally {
-      setIsAddingToCart(false);
     }
   };
 
@@ -506,7 +487,6 @@ const FramePreview = () => {
           onDecrease={() => setQuantity((prev) => Math.max(1, prev - 1))}
           onIncrease={handleIncreaseQuantity}
           onAddToCart={handleArtworkAddToCart}
-          isAddingToCart={isAddingToCart}
         />
       )}
     </Box>
