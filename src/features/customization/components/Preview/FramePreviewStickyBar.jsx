@@ -12,6 +12,7 @@ const FramePreviewStickyBar = ({
   onDecrease,
   onIncrease,
   onAddToCart,
+  isAddingToCart,
 }) => {
   const widthValue = Number(selectedSize?.width_cm || 0);
   const heightValue = Number(selectedSize?.height_cm || 0);
@@ -125,7 +126,7 @@ const FramePreviewStickyBar = ({
                 borderRadius="full"
                 size="sm"
                 color="#666"
-                isDisabled={quantity <= 1}
+                isDisabled={quantity <= 1 || Boolean(isAddingToCart)}
                 onClick={onDecrease}
                 _hover={{ bg: "#EBEBEB" }}
                 minW="32px"
@@ -149,9 +150,10 @@ const FramePreviewStickyBar = ({
                 color="#666"
                 onClick={onIncrease}
                 isDisabled={
-                  availableForSelection !== null
+                  Boolean(isAddingToCart) ||
+                  (availableForSelection !== null
                     ? Number(quantity) >= Number(availableForSelection)
-                    : false
+                    : false)
                 }
                 _hover={{ bg: "#EBEBEB" }}
                 minW="32px"
@@ -173,6 +175,8 @@ const FramePreviewStickyBar = ({
             whiteSpace="nowrap"
             _hover={{ bg: "brand.500" }}
             boxShadow="0 4px 14px rgba(89, 8, 84, 0.25)"
+            isLoading={Boolean(isAddingToCart)}
+            isDisabled={Boolean(isAddingToCart)}
           >
             Add to Cart
           </Button>

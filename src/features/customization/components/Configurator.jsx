@@ -15,6 +15,7 @@ const Configurator = ({
   onDecrease,
   onIncrease,
   onAddToCart,
+  isAddingToCart,
 }) => {
   const { uploadedImage, imageSource } = useSelector(
     (state) => state.framePreview,
@@ -76,6 +77,7 @@ const Configurator = ({
           selectedFrame={selectedFrame}
           onDecrease={onDecrease}
           onAddToCart={onAddToCart}
+          isAddingToCart={isAddingToCart}
         />
       )}
     </>

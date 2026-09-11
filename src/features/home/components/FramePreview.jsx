@@ -57,6 +57,7 @@ const FramePreview = () => {
   useFrameFiltering();
 
   const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const selectedArtwork = useMemo(() => {
     const imageUrl =
@@ -119,11 +120,13 @@ const FramePreview = () => {
   const estimatedTotal = calculatedPrice;
 
   const handleArtworkAddToCart = async () => {
+    setIsAddingToCart(true);
     if (!token) {
       toast({
         title: "Please login to use Add to Cart",
         status: "warning",
       });
+      setIsAddingToCart(false);
       return;
     }
 
@@ -356,6 +359,9 @@ const FramePreview = () => {
         status: "error",
       });
     }
+    finally {
+      setIsAddingToCart(false);
+    }
   };
 
   useEffect(() => {
@@ -500,6 +506,7 @@ const FramePreview = () => {
           onDecrease={() => setQuantity((prev) => Math.max(1, prev - 1))}
           onIncrease={handleIncreaseQuantity}
           onAddToCart={handleArtworkAddToCart}
+          isAddingToCart={isAddingToCart}
         />
       )}
     </Box>
