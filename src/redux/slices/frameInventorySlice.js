@@ -185,6 +185,19 @@ const frameInventorySlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Failed to fetch frame inventory.";
       })
+      // PUBLIC FETCH (frontend-safe)
+      .addCase(fetchPublicFrameInventory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPublicFrameInventory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchPublicFrameInventory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || state.error;
+      })
       // ADD / UPDATE
       .addCase(addOrUpdateFrameInventory.pending, (state) => {
         state.loading = true;

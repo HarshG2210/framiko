@@ -14,6 +14,7 @@ import Configurator from "../../customization/components/Configurator";
 import ImageUploader from "../../customization/components/Controls/ImageUploader";
 import PreviewControls from "../../customization/components/Preview/PreviewControls";
 import { fetchArtworks } from "../../../redux/slices/artworksSlice";
+import { fetchPublicFrameInventory } from "../../../redux/slices/frameInventorySlice";
 import { loadAuthData } from "../../../services/authStorage";
 import { submitCustomizedFinalImage } from "../../../redux/slices/customizedFinalImageSlice";
 import { useFrameFiltering } from "../../customization/hooks/useFrameFiltering";
@@ -163,6 +164,19 @@ const FramePreview = () => {
     // `frameInventoryItems` which may be kept up-to-date elsewhere. This
     // prevents protected backend inventory endpoints from causing 401 errors
     // to interrupt the Add to Cart flow in deployed frontends.
+    try {
+      // Dispatch the public inventory fetch but do not use unwrap() so a
+      // 401 from the public endpoint won't throw — instead we read the
+      // action payload and fall back to existing state.
+      const invAction = await dispatch(fetchPublicFrameInventory());
+      const invPayload = invAction?.payload ?? [];
+      freshInventory = Array.isArray(invPayload)
+        ? invPayload
+        : invPayload?.results || invPayload?.data || freshInventory;
+    } catch (e) {
+      console.log("Error fetching frame inventory:", e);
+      // ignore and continue with whatever is in the store
+    }
 
     try {
       const cartPayload = await dispatch(fetchCartItems()).unwrap();
