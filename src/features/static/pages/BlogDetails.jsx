@@ -35,14 +35,6 @@ import { useParams } from "react-router-dom";
 
 /* ─── helpers ─────────────────────────────────────────────────────────────── */
 
-const getYouTubeEmbed = (url) => {
-  if (!url) return null;
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?/\s"]+)/,
-  );
-  return match ? `https://www.youtube.com/embed/${match[1]}` : null;
-};
-
 const fmtDate = (val) =>
   val
     ? new Date(val).toLocaleDateString("en-IN", {
@@ -62,6 +54,18 @@ const fmtDateTime = (val) =>
         minute: "2-digit",
       })
     : null;
+
+const renderInlineFormatting = (line) =>
+  line.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+
+const isArticleHeading = (line) =>
+  /^\d+\.\s/.test(line.trim()) ||
+  line.trim() === "Make Your Space Feel Like You";
 
 /* Category badge color map */
 const categoryColor = (cat = "") => {
@@ -107,7 +111,7 @@ const ImageLightbox = ({ images, initialIdx = 0, isOpen, onClose }) => {
                 objectFit="contain"
               />
             </Box>
-            <Text color="whiteAlpha.700" fontSize="sm">
+            <Text color="whiteAlpha.700" fontSize="lg">
               {idx + 1} / {images.length}
             </Text>
             {images.length > 1 && (
@@ -293,13 +297,25 @@ const CommentCard = ({ comment }) => {
       />
       <Box flex={1}>
         <Flex align="baseline" gap={2} mb={1} flexWrap="wrap">
-          <Text fontWeight="600" fontSize="sm" color="neutral.900">
+          <Text
+            fontWeight="600"
+            fontSize={{ base: "md", md: "md" }}
+            color="neutral.900"
+          >
             {author}
           </Text>
-          {date && <Text fontSize="xs" color="gray.400">{date}</Text>}
+          {date && (
+            <Text fontSize="xs" color="gray.400">
+              {date}
+            </Text>
+          )}
         </Flex>
         <Box bg="beige.50" borderRadius="xl" px={4} py={3}>
-          <Text fontSize="sm" color="gray.700" lineHeight="1.7">
+          <Text
+            fontSize={{ base: "md", md: "md" }}
+            color="gray.700"
+            lineHeight="1.7"
+          >
             {body}
           </Text>
         </Box>
@@ -314,7 +330,7 @@ const PopularPostCard = ({ post }) => {
   const cover =
     Array.isArray(post.images) && post.images[0]
       ? post.images[0]
-      : post.image1 || null;
+      : post.image || null;
   const date = fmtDate(post.created_at);
   const category = post.category || post.tags?.[0] || "";
   const catStyle = categoryColor(category);
@@ -333,7 +349,13 @@ const PopularPostCard = ({ post }) => {
         _hover={{ transform: "translateY(-3px)" }}
       >
         {/* Image */}
-        <Box h="180px" borderRadius="lg" overflow="hidden" bg="neutral.100" mb={3}>
+        <Box
+          h="180px"
+          borderRadius="lg"
+          overflow="hidden"
+          bg="neutral.100"
+          mb={3}
+        >
           {cover ? (
             <Image
               src={cover}
@@ -368,7 +390,11 @@ const PopularPostCard = ({ post }) => {
               {category}
             </Box>
           )}
-          {date && <Text fontSize="10px" color="gray.400">{date}</Text>}
+          {date && (
+            <Text fontSize="10px" color="gray.400">
+              {date}
+            </Text>
+          )}
         </Flex>
 
         {/* Title */}
@@ -426,31 +452,23 @@ export default function BlogDetails() {
     if (!item) return [];
     if (Array.isArray(item.paragraphs) && item.paragraphs.length > 0)
       return item.paragraphs.filter(Boolean);
-    return Array.from(
-      { length: 20 },
-      (_, i) => item[`paragraph${i + 1}`],
-    ).filter(Boolean);
+    return item.paragraph1 ? [item.paragraph1] : [];
   }, [item]);
 
   const images = useMemo(() => {
     if (!item) return [];
     if (Array.isArray(item.images) && item.images.length > 0)
       return item.images.filter(Boolean);
-    return Array.from({ length: 5 }, (_, i) => item[`image${i + 1}`]).filter(
-      Boolean,
-    );
+    return item.image ? [item.image] : [];
   }, [item]);
 
   /* Cover = first image */
   const coverImage = images[0] || null;
   const bodyImages = images.slice(1);
 
-  const embedUrl = getYouTubeEmbed(item?.video_link);
   const date = fmtDate(item?.created_at);
   const updatedDate = fmtDate(item?.updated_at);
   const author = item?.author?.username || item?.author?.name || "Admin";
-  const category = item?.category || item?.tags?.[0] || "";
-  const catStyle = categoryColor(category);
 
   /* Popular posts = other posts excluding current */
   const popularPosts = useMemo(() => {
@@ -492,7 +510,7 @@ export default function BlogDetails() {
 
   if (error) {
     return (
-      <Box maxW="600px" mx="auto" py={20} px={6} textAlign="center">
+      <Box maxW="12   00px" mx="auto" py={20} px={6} textAlign="center">
         <Text fontSize="3xl" mb={4}>
           😕
         </Text>
@@ -511,7 +529,7 @@ export default function BlogDetails() {
 
   if (!item) {
     return (
-      <Box maxW="600px" mx="auto" py={20} px={6} textAlign="center">
+      <Box maxW="1200px" mx="auto" py={20} px={6} textAlign="center">
         <Text fontSize="3xl" mb={4}>
           📄
         </Text>
@@ -526,15 +544,17 @@ export default function BlogDetails() {
   }
 
   return (
-    <Box bg="white" w="full">
+    <Box bg="#f4f4f4" w="full" minH="100vh">
       <Box
-        maxW="860px"
+        maxW="1200px"
         mx="auto"
-        py={{ base: 8, md: 14 }}
-        px={{ base: 4, md: 8 }}
+        py={{ base: 4, md: 6 }}
+        px={{ base: 6, md: 8 }}
+        bg="white"
+        minH="100vh"
       >
         {/* ── BACK NAV ── */}
-        <Box mb={6}>
+        <Box display="none">
           <Button
             as={Link}
             to="/blog"
@@ -549,42 +569,19 @@ export default function BlogDetails() {
         </Box>
 
         {/* ── ARTICLE HEADER ── */}
-        <Box mb={7}>
+        <Box mb={4}>
           {/* Category + date eyebrow */}
-          <Flex align="center" gap={3} mb={4} flexWrap="wrap">
-            {category && (
-              <Box
-                px={2.5}
-                py={0.5}
-                borderRadius="md"
-                bg={catStyle.bg}
-                fontSize="10px"
-                fontWeight="700"
-                color={catStyle.color}
-                textTransform="uppercase"
-                letterSpacing="0.06em"
-              >
-                {category}
-              </Box>
-            )}
-            {date && <Text fontSize="xs" color="gray.400">{date}</Text>}
-            {updatedDate && updatedDate !== date && (
-              <Text fontSize="xs" color="gray.400">
-                · Updated {updatedDate}
-              </Text>
-            )}
-          </Flex>
-
           {/* Title */}
           <Text
             as="h1"
             fontSize={{ base: "2xl", md: "4xl" }}
-            fontWeight="800"
-            lineHeight="1.15"
+            fontWeight="700"
+            lineHeight="1.2"
             color="neutral.900"
-            mb={item.subtitle ? 3 : 0}
+            mb={0}
             fontFamily="heading"
-            letterSpacing="-0.01em"
+            textAlign="center"
+            letterSpacing="0"
           >
             {item.title || "Blog Post"}
           </Text>
@@ -592,7 +589,7 @@ export default function BlogDetails() {
           {/* Subtitle */}
           {item.subtitle && (
             <Text
-              fontSize={{ base: "md", md: "lg" }}
+              fontSize={{ base: "lg", md: "xl" }}
               color="gray.500"
               fontStyle="italic"
               lineHeight="1.6"
@@ -604,19 +601,31 @@ export default function BlogDetails() {
 
         {/* ── HERO IMAGE ── */}
         {coverImage && (
-          <Box mb={8} borderRadius="2xl" overflow="hidden">
+          <Box mb={2} overflow="hidden" display="flex" justifyContent="center">
             <Image
               src={coverImage}
               alt={item.title}
-              w="100%"
-              maxH="460px"
-              objectFit="cover"
+              w={{ base: "100%", sm: "100%" }}
+              maxW="1200px"
+              h="auto"
+              objectFit="contain"
             />
           </Box>
         )}
 
+        {date && (
+          <Text
+            textAlign="flex-start"
+            fontSize={{ base: "sm", md: "sm" }}
+            color="gray.600"
+            mb={6}
+          >
+            {date}
+          </Text>
+        )}
+
         {/* ── STATS ROW (subtle) ── */}
-        <Flex gap={5} mb={8} flexWrap="wrap">
+        <Flex display="none" gap={5} mb={8} flexWrap="wrap">
           <Flex align="center" gap={1.5}>
             <FaHeart color="#FC8181" size={13} />
             <Text fontSize="sm" color="gray.400">
@@ -639,55 +648,28 @@ export default function BlogDetails() {
 
         {/* ── BODY PARAGRAPHS ── */}
         {paragraphs.length > 0 && (
-          <VStack align="stretch" spacing={5} mb={10}>
+          <VStack align="stretch" spacing={3} mb={8}>
             {paragraphs.map((para, i) => {
-              /* Detect blockquote — paragraph starting with " or ' */
-              const isQuote = /^["'"'']/.test(para.trim());
-              if (isQuote) {
-                /* Split off attribution if last line starts with — or - */
-                const lines = para.split("\n");
-                const lastLine = lines[lines.length - 1]?.trim();
-                const isAttrib = /^[—–-]/.test(lastLine);
-                const quoteText = isAttrib
-                  ? lines.slice(0, -1).join("\n")
-                  : para;
-                const attrib = isAttrib ? lastLine : null;
-
-                return (
-                  <Box
-                    key={i}
-                    borderLeft="4px solid #C9AB7E"
-                    pl={6}
-                    py={2}
-                    my={2}
-                  >
-                    <Text
-                      fontSize={{ base: "md", md: "lg" }}
-                      lineHeight="1.85"
-                      color="neutral.900"
-                      fontStyle="italic"
-                      fontWeight="500"
-                    >
-                      {quoteText}
-                    </Text>
-                    {attrib && (
-                      <Text fontSize="sm" color="gray.400" mt={2}>
-                        {attrib}
-                      </Text>
-                    )}
-                  </Box>
-                );
-              }
-
               return (
-                <Text
-                  key={i}
-                  fontSize={{ base: "md", md: "lg" }}
-                  lineHeight="1.85"
-                  color="gray.700"
-                >
-                  {para}
-                </Text>
+                <Box key={i}>
+                  {para.split(/\r?\n|\u2028/).map((line, lineIndex) => {
+                    if (!line.trim()) {
+                      return <Box key={lineIndex} h="3px" />;
+                    }
+
+                    return (
+                      <Text
+                        key={lineIndex}
+                        fontSize={{ base: "md", md: "lg" }}
+                        lineHeight="1.8"
+                        color="neutral.900"
+                        fontWeight={isArticleHeading(line) ? "700" : "400"}
+                      >
+                        {renderInlineFormatting(line)}
+                      </Text>
+                    );
+                  })}
+                </Box>
               );
             })}
           </VStack>
@@ -700,52 +682,8 @@ export default function BlogDetails() {
           </Box>
         )}
 
-        {/* ── YOUTUBE VIDEO ── */}
-        {embedUrl && (
-          <Box mb={10}>
-            <Text
-              fontSize="xs"
-              fontWeight="700"
-              textTransform="uppercase"
-              letterSpacing="0.12em"
-              color="red.500"
-              mb={4}
-            >
-              ▶ Video
-            </Text>
-            <Box
-              borderRadius="2xl"
-              overflow="hidden"
-              h={{ base: "220px", sm: "300px", md: "420px" }}
-              bg="black"
-            >
-              <iframe
-                title="Blog video"
-                width="100%"
-                height="100%"
-                src={embedUrl}
-                allowFullScreen
-                frameBorder="0"
-              />
-            </Box>
-            {item.video_link && (
-              <Text fontSize="xs" color="gray.400" mt={2} textAlign="right">
-                Source:{" "}
-                <a
-                  href={item.video_link}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: "inherit", textDecoration: "underline" }}
-                >
-                  {item.video_link}
-                </a>
-              </Text>
-            )}
-          </Box>
-        )}
-
         {/* ── METADATA FOOTER ── */}
-        <Box p={6} bg="#F7F5F1" borderRadius="2xl" mb={10}>
+        <Box display="none" p={6} bg="#F7F5F1" borderRadius="2xl" mb={10}>
           <Grid templateColumns={{ base: "1fr", sm: "repeat(2, 1fr)" }} gap={5}>
             {[
               {
@@ -786,14 +724,15 @@ export default function BlogDetails() {
           align="center"
           gap={3}
           mb={10}
-          p={5}
-          bg="#F7F5F1"
-          borderRadius="2xl"
+          p={2}
+          borderTop="1px solid"
+          borderColor="gray.200"
         >
           <Button
             leftIcon={<FaHeart />}
             variant="solid"
-            borderRadius="full"
+            borderRadius="0"
+            size="xs"
             onClick={handleLike}
           >
             {item.likes_count ?? 0} Like{item.likes_count !== 1 ? "s" : ""}
@@ -801,7 +740,8 @@ export default function BlogDetails() {
           <Button
             leftIcon={<FaRegComment />}
             variant="outline"
-            borderRadius="full"
+            borderRadius="0"
+            size="xs"
             onClick={() =>
               document.getElementById("blog-comment-input")?.focus()
             }
@@ -836,7 +776,7 @@ export default function BlogDetails() {
               placeholder="Write your comment here…"
               minH="130px"
               borderRadius="xl"
-              fontSize="sm"
+              fontSize={{ base: "md", md: "md" }}
               bg="beige.50"
               border="1.5px solid"
               borderColor="neutral.200"
@@ -898,7 +838,15 @@ export default function BlogDetails() {
               >
                 Popular Post
               </Text>
-              <Button as={Link} to="/blog" size="sm" variant="brand" borderRadius="full" fontSize="xs" px={5}>
+              <Button
+                as={Link}
+                to="/blog"
+                size="sm"
+                variant="brand"
+                borderRadius="full"
+                fontSize="xs"
+                px={5}
+              >
                 View All
               </Button>
             </Flex>

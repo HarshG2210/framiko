@@ -38,7 +38,7 @@ const getExcerpt = (post) => {
 
 const getCover = (post) => {
   if (Array.isArray(post.images) && post.images[0]) return post.images[0];
-  return post.image1 || null;
+  return post.image || null;
 };
 
 /* Category badge color map — matches the coloured labels in the screenshot */

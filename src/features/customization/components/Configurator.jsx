@@ -40,7 +40,12 @@ const Configurator = ({
           <BackgroundSelectorGrid />
         </Box>
 
-        <Box flex="1" order={{ base: 2, md: 2, lg: 2 }} px={4}>
+        <Box
+          flex="1"
+          order={{ base: 2, md: 2, lg: 2 }}
+          px={{ base: 0, md: 4 }}
+          borderRadius="lg"
+        >
           <PreviewDisplay
             estimatedTotal={estimatedTotal}
             quantity={quantity}

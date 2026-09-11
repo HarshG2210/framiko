@@ -11,6 +11,7 @@ const FramedArtwork = ({
   size,
   variant = "regular",
   draggableProps,
+  mobileFixed = false,
 }) => {
   const widthPx = Number(size.width_cm) * CM_TO_PX;
   const heightPx = Number(size.height_cm) * CM_TO_PX;
@@ -18,24 +19,41 @@ const FramedArtwork = ({
   const { borderWidth, borderSlice } = useFrameBorder(
     selectedFrame,
     showFrame,
-    variant
+    variant,
   );
 
   if (!uploadedImage || !size) return null;
+
+  // Responsive positioning: fixed top-center on mobile, draggable absolute on desktop
+  const positionStyles = mobileFixed
+    ? {
+        position: "absolute",
+        left: "50%",
+        top: "25%",
+        transform: "translateX(-50%)",
+        zIndex: 80,
+        cursor: "default",
+      }
+    : {
+        position: "absolute",
+        left: `${draggableProps?.position.x}px`,
+        top: `${draggableProps?.position.y}px`,
+        cursor: "grab",
+      };
+
   return (
     <Box
-      cursor="grab"
-      onMouseDown={draggableProps?.onMouseDown}
-      ref={draggableProps?.ref}
-      position="absolute"
-      left={`${draggableProps?.position.x}px`}
-      top={`${draggableProps?.position.y}px`}
+      {...positionStyles}
+      onMouseDown={!mobileFixed ? draggableProps?.onMouseDown : undefined}
+      ref={!mobileFixed ? draggableProps?.ref : undefined}
       transition="transform 0.1s linear"
-      boxShadow="10px 10px 10px 5px rgba(0,0,0,0.3)"
+      boxShadow={mobileFixed ? "none" : "10px 10px 10px 5px rgba(0,0,0,0.3)"}
+      maxW={mobileFixed ? "10vw" : undefined}
+      width={mobileFixed ? "10vw" : undefined}
     >
       <Box
-        width={`${widthPx}px`}
-        height={`${heightPx}px`}
+        width={mobileFixed ? "10vw" : `${widthPx}px`}
+        height={mobileFixed ? "auto" : `${heightPx}px`}
         boxSizing="content-box"
         border={`${borderWidth}px solid transparent`}
         sx={{
@@ -50,7 +68,7 @@ const FramedArtwork = ({
           alt={uploadedImage}
           w="100%"
           h="100%"
-          objectFit="fill"
+          objectFit={mobileFixed ? "contain" : "fill"}
           draggable={false}
           bg="transparent"
         />

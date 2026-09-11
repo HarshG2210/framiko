@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   Flex,
+  HStack,
   Heading,
   SimpleGrid,
   Stack,
@@ -124,28 +125,195 @@ const ViewProfile = () => {
     "";
 
   return (
-    <Box p={{ base: 4, sm: 6, lg: 8 }} bg="neutral.50" minH="100vh">
+    <Box p={{ base: 0, lg: 8 }} bg="neutral.50" minH="100vh">
       <Flex
         maxW="1200px"
         mx="auto"
-        gap={{ base: 4, md: 6, lg: 8 }}
+        gap={{ base: 0, lg: 8 }}
         align="flex-start"
         direction={{ base: "column", lg: "row" }}
       >
-        {/* Left column: Profile card */}
+        {/* ---------- Mobile profile header (base only) ---------- */}
         <Box
-          w={{ base: "100%", lg: "320px" }}
-          maxW={{ lg: "320px" }}
+          display={{ base: "block", lg: "none" }}
+          w="100%"
+          bg="white"
+          borderBottom="1px solid"
+          borderColor="neutral.200"
+          px={4}
+          pt={6}
+          pb={5}
+        >
+          <Flex align="center" gap={4}>
+            <Box position="relative" flexShrink={0}>
+              <Avatar
+                key={profilePictureUrl || "no-avatar"}
+                size="lg"
+                name={`${user?.user?.first_name || ""} ${
+                  user?.user?.last_name || ""
+                }`}
+                src={profilePictureUrl}
+                border="3px solid white"
+                boxShadow="0 0 0 3px var(--chakra-colors-gold-200)"
+                opacity={isPictureRefreshing ? 0.6 : 1}
+                transition="opacity 0.2s ease"
+              />
+              <Box
+                position="absolute"
+                bottom={-1}
+                right={-1}
+                bg="gold.500"
+                borderRadius="full"
+                w="24px"
+                h="24px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                cursor="pointer"
+                _active={{ transform: "scale(0.92)" }}
+                transition="transform 0.15s ease"
+                onClick={onPictureOpen}
+                border="2px solid white"
+                title="Edit profile picture"
+              >
+                <Text fontSize="10px" color="white">
+                  ✏️
+                </Text>
+              </Box>
+            </Box>
+
+            <Box minW={0} flex={1}>
+              <Heading
+                size="sm"
+                color="neutral.900"
+                fontFamily="body"
+                noOfLines={1}
+              >
+                {user?.user?.first_name || ""} {user?.user?.last_name || ""}
+              </Heading>
+              <Text
+                color="neutral.500"
+                fontSize="xs"
+                fontFamily="body"
+                noOfLines={1}
+                mt={0.5}
+              >
+                {user?.user?.email}
+              </Text>
+            </Box>
+          </Flex>
+
+          <SimpleGrid columns={2} spacing={2.5} mt={4}>
+            <Box bg="gold.50" borderRadius="xl" px={3} py={2.5}>
+              <Text
+                fontSize="9px"
+                color="gold.700"
+                fontWeight={700}
+                textTransform="uppercase"
+                letterSpacing="0.06em"
+              >
+                Mobile
+              </Text>
+              <Text fontWeight={700} fontSize="xs" color="neutral.800" mt={0.5}>
+                {user?.phone_number || "—"}
+              </Text>
+            </Box>
+            <Box bg="rose.50" borderRadius="xl" px={3} py={2.5}>
+              <Text
+                fontSize="9px"
+                color="rose.700"
+                fontWeight={700}
+                textTransform="uppercase"
+                letterSpacing="0.06em"
+              >
+                Member Since
+              </Text>
+              <Text fontWeight={700} fontSize="xs" color="neutral.800" mt={0.5}>
+                {user?.created_at
+                  ? new Date(user.created_at).toLocaleDateString()
+                  : "—"}
+              </Text>
+            </Box>
+          </SimpleGrid>
+        </Box>
+
+        {/* ---------- Mobile pill tab nav (base only) ---------- */}
+        <Box
+          display={{ base: "block", lg: "none" }}
+          w="100%"
+          bg="white"
+          borderBottom="1px solid"
+          borderColor="neutral.200"
+          position="sticky"
+          top={0}
+          zIndex={2}
+        >
+          <HStack
+            spacing={2}
+            px={4}
+            py={3}
+            overflowX="auto"
+            css={{
+              "&::-webkit-scrollbar": { display: "none" },
+              scrollbarWidth: "none",
+            }}
+            // bg="#000"
+          >
+            {NAV_ITEMS.map((item) => {
+              const isActive = selectedTab === item.key;
+              return (
+                <Button
+                  key={item.key}
+                  size="sm"
+                  flexShrink={0}
+                  borderRadius="full"
+                  fontFamily="body"
+                  fontSize="xs"
+                  variant={isActive ? "outline" : "outline"}
+                  bg={isActive ? "gold.500" : "white"}
+                  color={isActive ? "black" : "neutral.600"}
+                  borderColor={isActive ? "gold.500" : "neutral.200"}
+                  _hover={{ bg: isActive ? "gold.600" : "neutral.50" }}
+                  onClick={() => {
+                    if (item.key === "orders") setSelectedOrderId(null);
+                    setSelectedTab(item.key);
+                  }}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
+            <Button
+              size="sm"
+              flexShrink={0}
+              borderRadius="full"
+              fontFamily="body"
+              fontSize="xs"
+              variant="outline"
+              color={selectedTab === "delete" ? "red.600" : "neutral.500"}
+              borderColor={selectedTab === "delete" ? "red.300" : "neutral.200"}
+              onClick={() => setSelectedTab("delete")}
+            >
+              Delete Account
+            </Button>
+          </HStack>
+        </Box>
+
+        {/* ---------- Desktop sidebar (lg and up only) ---------- */}
+        <Box
+          display={{ base: "none", lg: "block" }}
+          w="320px"
+          maxW="320px"
           flexShrink={0}
           bg="white"
           borderRadius="2xl"
           border="1px solid"
           borderColor="neutral.200"
           overflow="hidden"
-          position={{ base: "static", lg: "sticky" }}
-          top={{ lg: "8" }}
+          position="sticky"
+          top="8"
         >
-          <Box p={{ base: 4, sm: 5, md: 6 }}>
+          <Box p={6}>
             <VStack spacing={4} align="stretch">
               <Box textAlign="center">
                 <Box
@@ -158,7 +326,7 @@ const ViewProfile = () => {
                 >
                   <Avatar
                     key={profilePictureUrl || "no-avatar"}
-                    size={{ base: "xl", md: "2xl" }}
+                    size="2xl"
                     name={`${user?.user?.first_name || ""} ${
                       user?.user?.last_name || ""
                     }`}
@@ -173,8 +341,8 @@ const ViewProfile = () => {
                     right={0}
                     bg="gold.500"
                     borderRadius="full"
-                    w={{ base: "28px", md: "32px" }}
-                    h={{ base: "28px", md: "32px" }}
+                    w="32px"
+                    h="32px"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -190,12 +358,7 @@ const ViewProfile = () => {
                     </Text>
                   </Box>
                 </Box>
-                <Heading
-                  size={{ base: "md", md: "lg" }}
-                  mb={1}
-                  color="neutral.900"
-                  fontFamily="body"
-                >
+                <Heading size="lg" mb={1} color="neutral.900" fontFamily="body">
                   {user?.user?.first_name || ""} {user?.user?.last_name || ""}
                 </Heading>
                 <Text color="neutral.500" fontSize="sm" fontFamily="body">
@@ -205,7 +368,7 @@ const ViewProfile = () => {
 
               <Divider borderColor="neutral.200" />
 
-              <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={3}>
+              <SimpleGrid columns={2} spacing={3}>
                 <Box bg="gold.50" borderRadius="lg" px={3} py={2.5}>
                   <Text
                     fontSize="10px"
@@ -260,7 +423,7 @@ const ViewProfile = () => {
                   return (
                     <Button
                       key={item.key}
-                      size={{ base: "sm", md: "md" }}
+                      size="md"
                       justifyContent="flex-start"
                       variant={isActive ? "solid" : "ghost"}
                       borderLeft="3px solid"
@@ -281,7 +444,7 @@ const ViewProfile = () => {
               <Divider borderColor="neutral.200" />
 
               <Button
-                size={{ base: "sm", md: "md" }}
+                size="md"
                 variant={selectedTab === "delete" ? "danger" : "ghost"}
                 justifyContent="flex-start"
                 borderRadius="lg"
@@ -294,33 +457,29 @@ const ViewProfile = () => {
           </Box>
         </Box>
 
-        {/* Right column: Panels */}
+        {/* ---------- Panel (shared, styled per breakpoint) ---------- */}
         <Box
           flex={1}
           w="100%"
           bg="white"
-          borderRadius="2xl"
-          border="1px solid"
+          borderRadius={{ base: 0, lg: "2xl" }}
+          border={{ base: "none", lg: "1px solid" }}
           borderColor="neutral.200"
-          p={{ base: 4, sm: 5, md: 8 }}
+          p={{ base: 4, lg: 8 }}
         >
           <Box
+            display={{ base: "none", lg: "flex" }}
             mb={5}
-            display="flex"
-            flexDirection={{ base: "column", sm: "row" }}
+            flexDirection="row"
             justifyContent="space-between"
-            alignItems={{ base: "flex-start", sm: "center" }}
+            alignItems="center"
             gap={3}
           >
             <Box>
               <Text {...eyebrowStyle} mb={1}>
                 My Account
               </Text>
-              <Heading
-                size={{ base: "md", md: "lg" }}
-                color="neutral.900"
-                fontFamily="body"
-              >
+              <Heading size="lg" color="neutral.900" fontFamily="body">
                 {panelTitle}
               </Heading>
             </Box>
@@ -338,20 +497,31 @@ const ViewProfile = () => {
             </Badge>
           </Box>
 
-          <Divider mb={6} borderColor="neutral.200" />
+          {/* Mobile panel title */}
+          <Heading
+            display={{ base: "block", lg: "none" }}
+            size="sm"
+            color="neutral.900"
+            fontFamily="body"
+            mb={4}
+          >
+            {panelTitle}
+          </Heading>
+
+          <Divider mb={{ base: 4, lg: 6 }} borderColor="neutral.200" />
 
           {/* Content area */}
-          <Box minH={{ base: "auto", md: "400px" }}>
+          <Box minH={{ base: "auto", lg: "400px" }}>
             {selectedTab === "overview" && (
               <Box>
-                <Text mb={5} color="neutral.500" fontSize="sm">
+                <Text mb={4} color="neutral.500" fontSize="sm">
                   Quick information about your account. Edit details or manage
-                  addresses and orders from the left.
+                  addresses and orders from the tabs above.
                 </Text>
                 <Stack spacing={3}>
                   <Box
                     p={4}
-                    borderRadius="lg"
+                    borderRadius="xl"
                     bg="neutral.50"
                     border="1px solid"
                     borderColor="neutral.200"
@@ -367,7 +537,7 @@ const ViewProfile = () => {
 
                   <Box
                     p={4}
-                    borderRadius="lg"
+                    borderRadius="xl"
                     bg="neutral.50"
                     border="1px solid"
                     borderColor="neutral.200"
@@ -406,7 +576,7 @@ const ViewProfile = () => {
                     setSelectedOrderId(null);
                     setSelectedTab("orders");
                   }}
-                  size="md"
+                  size="sm"
                   _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
                 >
                   Back to orders

@@ -1,3 +1,5 @@
+// PreviewCanvas.jsx
+
 import { Box } from "@chakra-ui/react";
 import HiddenExportStage from "./HiddenExportStage";
 import PreviewControls from "./PreviewControls";
@@ -13,13 +15,14 @@ const PreviewCanvas = ({ previewRef }) => {
       h="100%"
       display="flex"
       flexDir="column"
-      alignItems="center"
+      alignItems={selectedBackground ? "stretch" : "center"}
       justifyContent="center"
       gap={4}
-      bg="#F8F8F8"
+      bg="#fff"
       position="relative"
       overflowX="hidden"
       overflowY="visible"
+      // borderRadius="lg"
     >
       <PreviewControls previewRef={previewRef} />
 

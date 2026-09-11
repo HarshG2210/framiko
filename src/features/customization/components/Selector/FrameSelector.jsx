@@ -6,6 +6,7 @@ import {
   ScaleFade,
   Text,
   VStack,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,6 +42,8 @@ const FrameSelector = () => {
 
   const [hoveredId, setHoveredId] = useState(null);
   const [hoverPos, setHoverPos] = useState({ x: 0, y: 0 });
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const hoveredFrame = visibleFrames.find((f) => f.id === hoveredId);
 
@@ -132,7 +135,7 @@ const FrameSelector = () => {
                 />
               </>
             )}
-            <Center w="100px" h="90px" borderRadius="lg">
+            <Center w={{ base: "64px", md: "100px" }} h={{ base: "64px", md: "90px" }} borderRadius="lg">
               <Text fontSize="xs" color="gray.400" fontWeight="500">
                 None
               </Text>
@@ -207,8 +210,8 @@ const FrameSelector = () => {
                 )}
 
                 <Box
-                  w="100px"
-                  h="90px"
+                  w={{ base: "64px", md: "100px" }}
+                  h={{ base: "64px", md: "90px" }}
                   mx="auto"
                   display="flex"
                   alignItems="center"
@@ -229,7 +232,7 @@ const FrameSelector = () => {
       </Box>
 
       {/* -------- HOVER TOOLTIP (left side) -------- */}
-      {hoveredFrame && (
+      {hoveredFrame && !isMobile && (
         <Portal>
           <ScaleFade in>
             <Box

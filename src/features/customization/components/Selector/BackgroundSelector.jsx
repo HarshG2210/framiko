@@ -102,7 +102,7 @@ const BackgroundSelectorGrid = memo(() => {
                 />
               </>
             )}
-            <Center w="100px" h="90px" borderRadius="lg">
+            <Center w={{ base: "64px", md: "100px" }} h={{ base: "64px", md: "90px" }} borderRadius="lg">
               <Text fontSize="xs" color="gray.400" fontWeight="500">
                 None
               </Text>
@@ -161,13 +161,13 @@ const BackgroundSelectorGrid = memo(() => {
                   </>
                 )}
 
-                <Box w="100px" h="90px" borderRadius="lg" overflow="hidden">
+                <Box w={{ base: "64px", md: "100px" }} h={{ base: "64px", md: "90px" }} borderRadius="lg" overflow="hidden">
                   <ChakraImage
                     src={bg.image}
                     alt={bg.name}
                     w="100%"
                     h="100%"
-                    objectFit="cover"
+                    objectFit="contain"
                   />
                 </Box>
               </Box>
