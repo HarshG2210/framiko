@@ -1,4 +1,5 @@
 import { Box, Image as ChakraImage } from "@chakra-ui/react";
+import { normalizeMediaUrl } from "../../../../utils/constant";
 
 import { useFrameBorder } from "../../hooks/useFrameBorder";
 
@@ -58,7 +59,7 @@ const FramedArtwork = ({
         border={`${borderWidth}px solid transparent`}
         sx={{
           borderImage: selectedFrame
-            ? `url(${selectedFrame.image}) ${borderSlice} stretch`
+            ? `url(${normalizeMediaUrl(selectedFrame.image)}) ${borderSlice} stretch`
             : "none",
         }}
         bg="transparent"

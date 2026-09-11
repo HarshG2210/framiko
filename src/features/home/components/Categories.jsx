@@ -33,6 +33,7 @@ import ArtworkDrawer from "../../categories/components/ArtworkDrawer";
 import CategoryCard from "../../categories/components/CategoryCard";
 import CategoryDrawer from "../../categories/components/CategoryDrawer";
 import CropModal from "../../customization/components/Controls/CropModal";
+import { normalizeMediaUrl } from "../../../utils/constant";
 import CustomDrawer from "../../categories/components/CustomDrawer";
 import { fetchSizes } from "../../../redux/slices/sizesSlice";
 
@@ -70,7 +71,7 @@ const Categories = () => {
         height: img.naturalHeight,
       });
     };
-    img.src = selectedImage.image_file;
+    img.src = normalizeMediaUrl(selectedImage.image_file);
   }, [selectedImage]);
 
   const handleScroll = () => {
@@ -118,7 +119,7 @@ const Categories = () => {
 
       dispatch(
         setUploadedImage({
-          image: image.image_file || image?.image_url,
+          image: normalizeMediaUrl(image.image_file || image?.image_url),
           fileName: "category-image.jpg",
           source: "artwork-category",
         }),
@@ -126,14 +127,14 @@ const Categories = () => {
 
       dispatch(
         setCropOriginalImage({
-          image: image.image_file || image?.image_url,
+          image: normalizeMediaUrl(image.image_file || image?.image_url),
         }),
       );
 
       dispatch(
         setSelectedCategoryImage({
           name: "category-image.jpg",
-          preview: image.image_file || image?.image_url,
+          preview: normalizeMediaUrl(image.image_file || image?.image_url),
         }),
       );
 
@@ -155,7 +156,7 @@ const Categories = () => {
           dispatch(setSelectedSize(supported[0]));
         }
       };
-      img.src = image.image_file || image?.image_url;
+      img.src = normalizeMediaUrl(image.image_file || image?.image_url);
     } catch {
       dispatch(clearSupportedSizes());
     }

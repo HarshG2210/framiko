@@ -1,5 +1,6 @@
 import { Image as KonvaImage, Layer, Rect, Stage } from "react-konva";
 
+import { normalizeMediaUrl } from "../../../../utils/constant";
 import { useFrameBorder } from "../../hooks/useFrameBorder";
 import useImage from "use-image";
 import { useSelector } from "react-redux";
@@ -42,8 +43,11 @@ const HiddenExportStage = () => {
       ? { w: selectedSizeWidth, h: selectedSizeHeight }
       : ORIENTATION_SIZE[imageOrientation] || ORIENTATION_SIZE.square;
 
-  const [artwork] = useImage(uploadedImage, "anonymous");
-  const [frame] = useImage(selectedFrame?.image, "anonymous");
+  const artworkUrl =
+    typeof uploadedImage === "string" ? uploadedImage : uploadedImage?.image;
+  const frameUrl = selectedFrame?.image;
+  const [artwork] = useImage(normalizeMediaUrl(artworkUrl), "anonymous");
+  const [frame] = useImage(normalizeMediaUrl(frameUrl), "anonymous");
 
   if (!artwork) return null;
 

@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { fetchFrames } from "../../../../redux/slices/framesSlice";
 import { setSelectedFrame } from "../../../../redux/slices/framePreviewSlice";
+import { normalizeMediaUrl } from "../../../../utils/constant";
 
 const FrameSelector = () => {
   const dispatch = useDispatch();
@@ -218,7 +219,7 @@ const FrameSelector = () => {
                   justifyContent="center"
                 >
                   <ChakraImage
-                    src={displayImage}
+                    src={normalizeMediaUrl(displayImage)}
                     alt={frame.name}
                     maxW="100%"
                     maxH="100%"

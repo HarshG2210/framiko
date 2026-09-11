@@ -1,4 +1,5 @@
 import { AspectRatio, Box, Image as ChakraImage, useBreakpointValue } from "@chakra-ui/react";
+import { normalizeMediaUrl } from "../../../../utils/constant";
 
 import { forwardRef } from "react";
 import { useFrameBorder } from "../../hooks/useFrameBorder";
@@ -50,7 +51,7 @@ const RegularPreviewContent = forwardRef((_, previewRef) => {
           boxSizing: "border-box",
           border: `${borderWidth}px solid transparent`,
           borderImage: selectedFrame
-            ? `url(${selectedFrame.image}) ${borderSlice} stretch`
+            ? `url(${normalizeMediaUrl(selectedFrame.image)}) ${borderSlice} stretch`
             : "none",
           bg: "white",
           position: "relative",
