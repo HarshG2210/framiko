@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/media/:path*",
-      "destination": "https://gauravbhongade.online/media/:path*"
+      "destination": "https://framikotest.pythonanywhere.com/media/:path*"
     },
     {
       "source": "/(owner-account|owner-account/:path*)",
