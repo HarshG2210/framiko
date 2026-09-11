@@ -1,7 +1,9 @@
 // src/redux/slices/frameInventorySlice.js
+
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import { adminInventoryLegacy } from "../../services/api/adminApi";
+import { publicApi } from "../../services/api/axiosInstance";
 import { toast } from "react-toastify";
 
 // GET inventory
@@ -9,7 +11,8 @@ export const fetchFrameInventory = createAsyncThunk(
   "frameInventory/fetchFrameInventory",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await adminInventoryLegacy.getFrameInventory();
+      // Use public API to read inventory for frontend checks (no admin token)
+      const data = await publicApi.get("/inventory/frame-inventory/");
 
       // Handle multiple response formats
       let result = [];
