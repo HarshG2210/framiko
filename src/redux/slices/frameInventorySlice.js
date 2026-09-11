@@ -11,8 +11,8 @@ export const fetchFrameInventory = createAsyncThunk(
   "frameInventory/fetchFrameInventory",
   async (_, { rejectWithValue }) => {
     try {
-      // Use public API to read inventory for frontend checks (no admin token)
-      const data = await publicApi.get("/inventory/frame-inventory/");
+      // Admin inventory fetch (requires admin auth token)
+      const data = await adminInventoryLegacy.getFrameInventory();
 
       // Handle multiple response formats
       let result = [];
@@ -34,13 +34,64 @@ export const fetchFrameInventory = createAsyncThunk(
 
       return result;
     } catch (error) {
-      // If backend returns 401 for public inventory, treat it as empty list
+      const msg =
+        error?.message ||
+        error?.data ||
+        "Network error while fetching inventory.";
+      toast.error(msg);
+      return rejectWithValue(msg);
+    }
+  },
+);
+
+// Public inventory fetch for frontend usage (does not require admin token)
+export const fetchPublicFrameInventory = createAsyncThunk(
+  "frameInventory/fetchPublicFrameInventory",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await publicApi.get("/inventory/frame-inventory/");
+
+      let result = [];
+      if (typeof data === "string") {
+        if (data.includes("<!doctype html>")) {
+          result = [];
+        }
+      } else if (Array.isArray(data)) {
+        result = data;
+      } else if (data?.results && Array.isArray(data.results)) {
+        result = data.results;
+      } else if (data?.data && Array.isArray(data.data)) {
+        result = data.data;
+      } else if (data?.items && Array.isArray(data.items)) {
+        result = data.items;
+      } else {
+        result = [];
+      }
+
+      return result;
+    } catch (error) {
       const status = error?.status || error?.response?.status;
       const backendDetail = error?.data || error?.response?.data;
 
+      // If 401 or backend indicates auth required, try a direct backend fallback (useful in dev)
       if (status === 401 || (backendDetail && backendDetail.detail)) {
-        // don't surface as an error for frontend usage; return empty inventory
-        return [];
+        try {
+          // Try fetching directly from the known backend host as a fallback
+          const fallbackBase = import.meta.env.VITE_API_BASE;
+          const resp = await fetch(
+            `${fallbackBase.replace(/\/$/, "")}/inventory/frame-inventory/`,
+          );
+          if (!resp.ok) return [];
+          const data = await resp.json();
+          if (Array.isArray(data)) return data;
+          if (data?.results && Array.isArray(data.results)) return data.results;
+          if (data?.data && Array.isArray(data.data)) return data.data;
+          if (data?.items && Array.isArray(data.items)) return data.items;
+          return [];
+        } catch (e) {
+          console.log(e);
+          return [];
+        }
       }
 
       const msg =
@@ -89,7 +140,8 @@ export const bulkUploadFrameInventory = createAsyncThunk(
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const result = await adminInventoryLegacy.bulkUploadFrameInventory(formData);
+      const result =
+        await adminInventoryLegacy.bulkUploadFrameInventory(formData);
       dispatch(fetchFrameInventory());
       return result.data;
     } catch (error) {
@@ -156,7 +208,8 @@ const frameInventorySlice = createSlice({
       })
       .addCase(bulkUploadFrameInventory.rejected, (state, action) => {
         state.bulkUploadLoading = false;
-        state.error = action.payload || "Failed to bulk upload frame inventory.";
+        state.error =
+          action.payload || "Failed to bulk upload frame inventory.";
       });
   },
 });

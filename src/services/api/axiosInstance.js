@@ -4,7 +4,9 @@ import { API_BASE } from "../../utils/constant";
 import axios from "axios";
 
 // Create axios instances for different API types
-const devBase = import.meta.env.DEV ? "" : API_BASE;
+// Prefer an explicit VITE_API_BASE when provided (useful for dev and deployed previews)
+const envApiBase = (import.meta.env.VITE_API_BASE || "").replace(/\/$/, "");
+const devBase = envApiBase || (import.meta.env.DEV ? "" : API_BASE);
 
 const publicApi = axios.create({
   baseURL: devBase,
@@ -13,6 +15,12 @@ const publicApi = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Debug: print resolved API base used by axios during startup
+try {
+  // eslint-disable-next-line no-console
+  console.debug("API base for axios instances:", { devBase, envApiBase, API_BASE });
+} catch (e) {}
 
 const userApi = axios.create({
   baseURL: devBase,

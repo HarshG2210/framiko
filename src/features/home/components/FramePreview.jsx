@@ -14,12 +14,18 @@ import Configurator from "../../customization/components/Configurator";
 import ImageUploader from "../../customization/components/Controls/ImageUploader";
 import PreviewControls from "../../customization/components/Preview/PreviewControls";
 import { fetchArtworks } from "../../../redux/slices/artworksSlice";
-import { fetchFrameInventory } from "../../../redux/slices/frameInventorySlice";
 import { loadAuthData } from "../../../services/authStorage";
 import { submitCustomizedFinalImage } from "../../../redux/slices/customizedFinalImageSlice";
 import { useFrameFiltering } from "../../customization/hooks/useFrameFiltering";
 import { useLocation } from "react-router-dom";
 import { useSizeFiltering } from "../../customization/hooks/useSizeFiltering";
+
+// Public inventory fetch intentionally not used here to avoid blocking add-to-cart
+
+
+
+
+
 
 const FramePreview = () => {
   const dispatch = useDispatch();
@@ -153,15 +159,10 @@ const FramePreview = () => {
     let freshInventory = frameInventoryItems;
     let freshCart = currentCartItems || [];
 
-    try {
-      const invPayload = await dispatch(fetchFrameInventory()).unwrap();
-      freshInventory = Array.isArray(invPayload)
-        ? invPayload
-        : invPayload?.results || invPayload?.data || freshInventory;
-    } catch (e) {
-      console.log("Error fetching frame inventory:", e);
-      // ignore fetch error and fall back to local state
-    }
+    // Avoid fetching public inventory synchronously here — use the store's
+    // `frameInventoryItems` which may be kept up-to-date elsewhere. This
+    // prevents protected backend inventory endpoints from causing 401 errors
+    // to interrupt the Add to Cart flow in deployed frontends.
 
     try {
       const cartPayload = await dispatch(fetchCartItems()).unwrap();
