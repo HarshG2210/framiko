@@ -147,21 +147,28 @@ const handleError = (error, apiType = "user") => {
     errorResponse.message = "Network error. Please check your connection.";
     console.error("Network Error:", error);
   } else if (error.response.status === 401) {
-    // Unauthorized - clear auth data
-    errorResponse.message = "Session expired. Please login again.";
+    // Unauthorized: only treat as session expiration for user/admin APIs.
+    if (apiType === "user" || apiType === "admin") {
+      errorResponse.message = "Session expired. Please login again.";
 
-    if (apiType === "user") {
-      // Dispatch logout action (would need Redux integration)
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("auth_refresh_token");
-    } else if (apiType === "admin") {
-      localStorage.removeItem("admin_auth_token");
+      if (apiType === "user") {
+        // Dispatch logout action (would need Redux integration)
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("auth_refresh_token");
+      } else {
+        localStorage.removeItem("admin_auth_token");
+      }
+
+      // Redirect to login (can be handled in Redux thunk or middleware)
+      window.dispatchEvent(
+        new CustomEvent("AUTH_EXPIRED", { detail: { type: apiType } }),
+      );
+    } else {
+      // For public or other API types, propagate backend message instead
+      errorResponse.message =
+        error.response?.data?.detail || error.response?.data?.message ||
+        "Authentication required";
     }
-
-    // Redirect to login (can be handled in Redux thunk or middleware)
-    window.dispatchEvent(
-      new CustomEvent("AUTH_EXPIRED", { detail: { type: apiType } }),
-    );
   } else if (error.response.status === 403) {
     errorResponse.message =
       "You don't have permission to access this resource.";

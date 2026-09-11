@@ -34,6 +34,15 @@ export const fetchFrameInventory = createAsyncThunk(
 
       return result;
     } catch (error) {
+      // If backend returns 401 for public inventory, treat it as empty list
+      const status = error?.status || error?.response?.status;
+      const backendDetail = error?.data || error?.response?.data;
+
+      if (status === 401 || (backendDetail && backendDetail.detail)) {
+        // don't surface as an error for frontend usage; return empty inventory
+        return [];
+      }
+
       const msg =
         error?.message ||
         error?.data ||
