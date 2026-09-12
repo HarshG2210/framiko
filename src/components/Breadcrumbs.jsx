@@ -151,6 +151,26 @@ const getBreadcrumbItems = (pathname) => {
   return items;
 };
 
+const breadcrumbTextStyles = {
+  fontSize: { base: "xs", md: "sm" },
+  color: "neutral.800",
+  fontWeight: "semibold",
+  fontFamily: "body",
+  whiteSpace: "nowrap",
+  maxW: { base: "100%", md: "none" },
+};
+
+const breadcrumbLinkStyles = {
+  fontSize: { base: "xs", md: "sm" },
+  color: "neutral.700",
+  fontFamily: "body",
+  whiteSpace: "nowrap",
+  maxW: { base: "100%", md: "none" },
+  display: "inline-block",
+  _hover: { color: "neutral.800", textDecoration: "none" },
+  _focus: { boxShadow: "none" },
+};
+
 export default function Breadcrumbs() {
   const location = useLocation();
 
@@ -188,10 +208,22 @@ export default function Breadcrumbs() {
         px={{ base: 4, md: 6 }}
         mb={6}
         fontFamily="body"
+        w="100%"
+        maxW="100%"
+        overflowX="auto"
+        sx={{
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": { display: "none" },
+        }}
       >
         <Breadcrumb
-          spacing="8px"
-          separator={<ChevronRightIcon color="neutral.500" />}
+          spacing={{ base: "6px", md: "8px" }}
+          separator={
+            <ChevronRightIcon color="neutral.500" boxSize={{ base: 4, md: 5 }} />
+          }
+          flexWrap="wrap"
+          overflow="visible"
+          maxW="100%"
         >
           {items.map((item, index) => {
             const isCurrent = index === currentIndex;
@@ -200,24 +232,21 @@ export default function Breadcrumbs() {
               <BreadcrumbItem
                 key={item.label + index}
                 isCurrentPage={isCurrent}
+                display="inline-flex"
+                alignItems="center"
+                minW={0}
+                maxW={{ base: "100%", md: "none" }}
               >
                 {isCurrent ? (
-                  <Text fontSize="sm" color="neutral.800" fontWeight="semibold" fontFamily="body">
+                  <Text {...breadcrumbTextStyles} noOfLines={1}>
                     {item.label}
                   </Text>
                 ) : isBefore ? (
-                  <BreadcrumbLink
-                    as={Link}
-                    to={item.to}
-                    fontSize="sm"
-                    color="neutral.700"
-                    fontFamily="body"
-                    _hover={{ color: "neutral.800", textDecoration: "none" }}
-                  >
+                  <BreadcrumbLink as={Link} to={item.to} {...breadcrumbLinkStyles}>
                     {item.label}
                   </BreadcrumbLink>
                 ) : (
-                  <Text fontSize="sm" color="neutral.500" fontFamily="body">
+                  <Text fontSize={{ base: "xs", md: "sm" }} color="neutral.500" fontFamily="body" whiteSpace="nowrap" noOfLines={1}>
                     {item.label}
                   </Text>
                 )}
@@ -240,10 +269,22 @@ export default function Breadcrumbs() {
       px={{ base: 4, md: 6 }}
       mb={6}
       fontFamily="body"
+      w="100%"
+      maxW="100%"
+      overflowX="auto"
+      sx={{
+        scrollbarWidth: "none",
+        "&::-webkit-scrollbar": { display: "none" },
+      }}
     >
       <Breadcrumb
-        spacing="8px"
-        separator={<ChevronRightIcon color="neutral.500" />}
+        spacing={{ base: "6px", md: "8px" }}
+        separator={
+          <ChevronRightIcon color="neutral.500" boxSize={{ base: 4, md: 5 }} />
+        }
+        flexWrap="wrap"
+        overflow="visible"
+        maxW="100%"
       >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -252,20 +293,17 @@ export default function Breadcrumbs() {
             <BreadcrumbItem
               key={`${item.label}-${index}`}
               isCurrentPage={isLast}
+              display="inline-flex"
+              alignItems="center"
+              minW={0}
+              maxW={{ base: "100%", md: "none" }}
             >
               {isLast || !hasValidLink ? (
-                <Text fontSize="sm" color="neutral.800" fontWeight="semibold" fontFamily="body">
+                <Text {...breadcrumbTextStyles} noOfLines={1}>
                   {item.label}
                 </Text>
               ) : (
-                <BreadcrumbLink
-                  as={Link}
-                  to={item.to}
-                  fontSize="sm"
-                  color="neutral.700"
-                  fontFamily="body"
-                  _hover={{ color: "neutral.800", textDecoration: "none" }}
-                >
+                <BreadcrumbLink as={Link} to={item.to} {...breadcrumbLinkStyles}>
                   {item.label}
                 </BreadcrumbLink>
               )}

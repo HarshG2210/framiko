@@ -71,8 +71,10 @@ const ProfilePictureModal = ({ isOpen, onClose, profilePictureUrl, onSaved }) =>
         borderRadius={{ base: "none", md: "3xl" }}
         overflow="hidden"
         mx={3}
-        maxH={{ base: "100vh", md: "auto" }}
+        maxH={{ base: "100vh", md: "90vh" }}
         fontFamily="body"
+        display="flex"
+        flexDirection="column"
       >
         <ModalHeader
           pt={{ base: 6, md: 8 }}
@@ -83,7 +85,21 @@ const ProfilePictureModal = ({ isOpen, onClose, profilePictureUrl, onSaved }) =>
         >
           Edit Profile Photo
         </ModalHeader>
-        <ModalBody px={{ base: 4, md: 8 }} pb={{ base: 4, md: 6 }} fontFamily="body">
+        <ModalBody
+          px={{ base: 4, md: 8 }}
+          pb={{ base: 4, md: 6 }}
+          fontFamily="body"
+          overflowY="auto"
+          maxH={{ base: "calc(100vh - 130px)", md: "70vh" }}
+          sx={{
+            scrollbarWidth: "thin",
+            "&::-webkit-scrollbar": { width: "6px" },
+            "&::-webkit-scrollbar-thumb": {
+              background: "neutral.300",
+              borderRadius: "full",
+            },
+          }}
+        >
           <Text color="neutral.600" mb={5} fontSize="sm" fontFamily="body">
             Choose a new picture and preview it before saving. Your current photo is shown on the left.
           </Text>

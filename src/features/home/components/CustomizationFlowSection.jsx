@@ -16,8 +16,8 @@ import {
 import {
   FiArrowRight,
   FiCrop,
+  FiEye,
   FiGrid,
-  FiHome,
   FiImage,
   FiPlay,
   FiShoppingCart,
@@ -55,7 +55,7 @@ const steps = [
       "Fine-tune placement so your artwork sits perfectly inside the frame.",
   },
   {
-    icon: FiHome,
+    icon: FiEye,
     title: "Preview on Wall",
     description: "See how your framed artwork looks on real room backgrounds.",
   },
@@ -80,7 +80,7 @@ const CustomizationFlowSection = () => {
       w="full"
       bg="#ffffff"
       mt="10"
-      py={{ base: 14, md: 18}}
+      py={{ base: 14, md: 18 }}
       px={{ base: 6, md: 12 }}
     >
       <VStack

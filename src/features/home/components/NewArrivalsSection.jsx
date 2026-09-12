@@ -85,7 +85,7 @@ const NewArrivalsSection = () => {
     <Box
       w="full"
       bg="#ffffff"
-      py={{ base: 14, md: 20 }}
+      // py={{ base: 14, md: 20 }}
       px={{ base: 6, md: 12 }}
     >
       {/* ── SECTION HEADER ── */}

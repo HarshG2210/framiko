@@ -66,7 +66,7 @@ export default function Faq() {
       mx="auto"
       w="full"
       bg="white"
-      py={{ base: 14, md: 20 }}
+      // py={{ base: 14, md: 20 }}
       fontFamily="body"
       // px={{ base: 6, md: 12 }}
     >

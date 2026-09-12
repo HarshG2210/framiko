@@ -102,6 +102,13 @@ const components = {
       _active: { bg: "transparent" },
     },
   },
+  Icon: {
+    baseStyle: {
+      display: "inline-block",
+      verticalAlign: "middle",
+      flexShrink: 0,
+    },
+  },
   Input: {
     defaultProps: {
       focusBorderColor: "brand.500",
@@ -126,6 +133,11 @@ const styles = {
     body: {
       lineHeight: "1.5",
       WebkitFontSmoothing: "antialiased",
+    },
+    ".chakra-icon, .chakra-icon svg": {
+      strokeWidth: "1.8",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
     },
     "*::selection": {
       bg: "#FFE6E6",
